@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@model System.Collections.Generic.List<string>
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+ <script type="text/javascript">
+        $(function () {
+			
+            // When your form is submitted
+            $("form").submit(function (e) {
+                // Prevent the default behavior
+                e.preventDefault();
+
+                // Serialize your form
+                var formData = new FormData($(this)[0]);
+				
+
+                // Make your POST
+                $ .ajax ({
+                    type: 'POST',
+                    url: "@Url.Action("Import","Home")",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (view) {
+                        
+                    },
+                    complete: function () {
+                       $.ajax({
+						url: '@Url.Action("GetData", "Home")',
+						type: "GET",
+						success: function (result) {
+						console.log(result);
+							jQuery.each(result, function(index, item){
+								$("#newSentences").append("<li class='list-group-item'>"+ this+"</li>");
+							})
+						}
+					});
+                    }
+                });
+
+				 
+            });
+        })
+    </script>
+<div class="">
+    <form enctype="multipart/form-data">
+        <div class="form-group">
+            <input class="form-control" type="text" name="reportName" placeholder="Enter a keyword" />
+            <input class="form-control-file" type="file" name="file" />
+            <input class="btn btn-primary" type="submit" />
+        </div>
+    </form>
+    <h3>New Sentences</h3>
+    <ul id="newSentences" class="list-group list-group-flush"></ul>
+    <h3>Recently saved sentences</h3>
+    <ul class="list-group list-group-flush">
+        @foreach(var s in ViewBag.OldSentences)
+        {
+             <li class="list-group-item">@s.Text </li>
+        }
+    </ul>
+</div>
